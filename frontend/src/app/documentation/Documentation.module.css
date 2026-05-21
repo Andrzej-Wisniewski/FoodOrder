@@ -1,0 +1,110 @@
+.doc {
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.6;
+  color: #ffffff;
+  overflow-y: auto;
+  scrollbar-width: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.doc h1,
+.doc h2,
+.doc h3 {
+  color: #ffffff;
+  margin-top: 1.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.doc h1 {
+  font-size: 2rem;
+  text-align: center;
+}
+
+.doc h2 {
+  font-size: 1.4rem;
+}
+
+.doc p {
+  margin: 0.6rem 0;
+  opacity: 0.9;
+}
+
+.doc hr {
+  border: none;
+  border-top: 1px solid rgba(149, 173, 79, 0.35);
+  margin: 1.25rem 0;
+}
+
+.doc ul,
+.doc ol {
+  margin: 0.7rem 0;
+  padding-left: 1.25rem;
+  opacity: 0.95;
+}
+
+.doc li {
+  margin: 0.25rem 0;
+}
+
+.doc a {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.doc a:hover {
+  opacity: 0.95;
+}
+
+.doc blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #95ad4f;
+  background: rgba(149, 173, 79, 0.08);
+  border-radius: 6px;
+}
+
+.doc th,
+.doc td {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+}
+
+.doc th {
+  background: rgba(149, 173, 79, 0.12);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.doc code {
+  background: #1f241e;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.doc pre {
+  background: #1f241e;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.doc pre code {
+  padding: 0;
+  border-radius: 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}

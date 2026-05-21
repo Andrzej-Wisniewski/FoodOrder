@@ -1,0 +1,80 @@
+.item {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.8rem 1.2rem;
+  background: linear-gradient(145deg, #344050 0%, #242424 50%, #3f4c5a 100%);
+  border: 1px solid #3b4450;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.item.editing {
+  border-color: #95ad4f;
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .item {
+    padding: 0.6rem 0.8rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}
+
+.viewBody {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.thumbnail {
+  width: 100px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.viewInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .viewBody {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .thumbnail {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .item {
+    padding: 0.5rem;
+  }
+}

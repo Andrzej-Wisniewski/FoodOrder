@@ -1,0 +1,85 @@
+.orderItem {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1.7rem 2rem;
+  /* background: #2a313a; */
+  border-radius: 10px;
+  border: 1px solid #3b4450;
+  color: #ffffff;
+  text-align: center;
+}
+
+.adminEdit .itemsList {
+  margin-bottom: 2rem;
+}
+
+.itemsList {
+  margin: 1rem auto;
+  padding-left: 0;
+  list-style: none;
+  line-height: 1.45;
+  text-align: left;
+}
+
+.statusSelect {
+  width: 100%;
+  max-width: 18rem;
+  padding: 0.8rem 1rem;
+  margin: 0.8rem auto 0;
+  display: block;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 6px;
+  font-size: 1rem;
+  /* appearance: none; */
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  /* justify-content: center; */
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+  .orderItem {
+    padding: 1.2rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .itemsList {
+    font-size: 0.9rem;
+  }
+
+  .statusSelect {
+    width: 100%;
+    max-width: none;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+
+  .orderItem h3 {
+    font-size: 1.05rem;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 380px) {
+  .orderItem {
+    font-size: 0.85rem;
+  }
+
+  .itemsList {
+    font-size: 0.85rem;
+  }
+}

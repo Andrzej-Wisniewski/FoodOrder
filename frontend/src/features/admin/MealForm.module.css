@@ -1,0 +1,150 @@
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.row {
+  width: 100%;
+  display: grid;
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.twoCols {
+  grid-template-columns: 1fr minmax(7rem, 0.4fr);
+}
+
+.twoColsEqual {
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+
+.descriptionBlock,
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  padding: 0.8rem 1rem;
+  min-height: clamp(7rem, 18vh, 12rem);
+  max-height: 40vh;
+  border: 1px solid #3b4450;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #000;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #95ad4f;
+}
+
+.select,
+.fileUpload {
+  min-height: 2.85rem;
+}
+
+.select {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  padding: 0.8rem 1rem;
+  background: #ffffff;
+  border: 1px solid #3b4450;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #000;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #95ad4f;
+}
+
+.select:hover {
+  border-color: #95ad4f;
+}
+
+.fileUpload {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  background: #fff;
+  border: 1px solid #3b4450;
+  border-radius: 6px;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  text-align: center;
+  font: inherit;
+  margin: 0;
+}
+
+.fileUpload:hover {
+  border-color: #95ad4f;
+}
+
+.fileName {
+  margin: -0.4rem 0 0;
+  font-size: 0.85rem;
+  word-break: break-word;
+  text-align: center;
+  color: #ccc;
+}
+
+@media (max-width: 900px) {
+  .textarea {
+    min-height: clamp(6rem, 16vh, 10rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .twoCols,
+  .twoColsEqual {
+    grid-template-columns: 1fr;
+  }
+
+  .row {
+    gap: 0.6rem;
+  }
+
+  .form {
+    gap: 0.8rem;
+  }
+
+  .textarea {
+    min-height: clamp(5.5rem, 14vh, 8rem);
+    max-height: 35vh;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .select,
+  .fileUpload {
+    padding: 0.7rem 0.9rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .textarea {
+    min-height: 5rem;
+    font-size: 0.95rem;
+  }
+}

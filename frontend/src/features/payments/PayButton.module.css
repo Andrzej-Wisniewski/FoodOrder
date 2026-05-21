@@ -1,0 +1,22 @@
+.pay {
+  margin-top: 1.2rem;
+  text-align: center;
+}
+
+.errorText {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  color: #ff6b6b;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .pay {
+    margin-top: 0.8rem;
+  }
+
+  .errorText {
+    text-align: center;
+    font-size: 0.85rem;
+  }
+}

@@ -1,0 +1,499 @@
+openapi: 3.1.0
+info:
+  title: FoodOrder API
+  version: '1.0.7'
+  description: API FoodOrder
+
+servers:
+  - url: http://localhost:3000/api
+
+tags:
+  - name: Auth
+  - name: Meals
+  - name: Orders
+  - name: Admin
+  - name: Payments
+  - name: Health
+  - name: Static
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        data: { type: object }
+        message: { type: string }
+
+    ErrorResponse:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        message: { type: string }
+        errors:
+          type: object
+          additionalProperties: { type: string }
+
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string, format: email }
+        role:
+          type: string
+          enum: [user, admin]
+
+    AuthResponse:
+      type: object
+      properties:
+        token: { type: string }
+        user: { $ref: '#/components/schemas/User' }
+
+    Meal:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string, maxLength: 50 }
+        description: { type: string }
+        price: { type: number, minimum: 0 }
+        category:
+          type: string
+          enum: [Przystawka, Zupa, Danie główne, Deser, Napoje]
+        image: { type: string, nullable: true }
+
+    MealCreate:
+      type: object
+      required: [name, price, description, category]
+      properties:
+        name: { type: string, maxLength: 50 }
+        price: { type: number, minimum: 0.01 }
+        description: { type: string }
+        category:
+          type: string
+          enum: [Przystawka, Zupa, Danie główne, Deser, Napoje]
+
+    CustomerDetails:
+      type: object
+      required: [name, email, street, postalCode, city]
+      properties:
+        name: { type: string }
+        email: { type: string, format: email }
+        street: { type: string }
+        postalCode: { type: string }
+        city: { type: string }
+
+    OrderItem:
+      type: object
+      properties:
+        mealId: { type: string }
+        name: { type: string }
+        quantity: { type: integer, minimum: 1 }
+        price: { type: number, minimum: 0 }
+
+    Order:
+      type: object
+      properties:
+        id: { type: string }
+        userId:
+          oneOf:
+            - { type: string }
+            - { $ref: '#/components/schemas/User' }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OrderItem' }
+        customer: { $ref: '#/components/schemas/CustomerDetails' }
+        totalPrice: { type: number }
+        status:
+          type: string
+          enum: [pending, completed, cancelled]
+        paymentStatus:
+          type: string
+          enum: [unpaid, paid, expired, failed, refunded]
+        stripeSessionId: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
+    CreateOrderRequest:
+      type: object
+      required: [items, customer]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [mealId, quantity]
+            properties:
+              mealId: { type: string }
+              quantity: { type: integer, minimum: 1 }
+        customer: { $ref: '#/components/schemas/CustomerDetails' }
+
+    CheckoutSessionResponse:
+      type: object
+      properties:
+        checkoutUrl: { type: string, format: uri }
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string }
+                  uptime: { type: number }
+                  timestamp: { type: string, format: date-time }
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Rejestracja
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 6 }
+      responses:
+        '201':
+          description: Utworzono
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '409':
+          description: Konflikt - użytkownik już istnieje
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '422':
+          description: Błąd walidacji
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      security: []
+      summary: Logowanie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '401':
+          description: Nieprawidłowe dane logowania
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /auth/current:
+    get:
+      tags: [Auth]
+      security: [{ bearerAuth: [] }]
+      summary: Aktualny użytkownik
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: '#/components/schemas/User' }
+        '401':
+          description: Brak autoryzacji
+
+  /meals:
+    get:
+      tags: [Meals]
+      security: []
+      summary: Lista dań (publiczna)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Meal' }
+
+  /orders:
+    get:
+      tags: [Orders]
+      security: [{ bearerAuth: [] }]
+      summary: Moje zamówienia
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Order' }
+        '401':
+          description: Brak autoryzacji
+    post:
+      tags: [Orders]
+      security: [{ bearerAuth: [] }]
+      summary: Utwórz zamówienie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateOrderRequest' }
+      responses:
+        '201':
+          description: Utworzono
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '400':
+          description: Nieprawidłowe dane
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+
+  /admin/orders:
+    get:
+      tags: [Admin]
+      security: [{ bearerAuth: [] }]
+      summary: Wszystkie zamówienia (admin)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Order' }
+        '403':
+          description: Brak uprawnień admina
+
+  /admin/orders/{id}/status:
+    put:
+      tags: [Admin]
+      security: [{ bearerAuth: [] }]
+      summary: Zmień status zamówienia (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [pending, completed, cancelled]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Order' }
+        '404':
+          description: Zamówienie nie znaleziono
+
+  /admin/meals:
+    get:
+      tags: [Admin]
+      security: [{ bearerAuth: [] }]
+      summary: Lista dań (admin)
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Meal' }
+    post:
+      tags: [Admin]
+      security: [{ bearerAuth: [] }]
+      summary: Utwórz danie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MealCreate' }
+      responses:
+        '201':
+          description: Utworzono
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Meal' }
+        '422':
+          description: Błąd walidacji
+
+  /admin/meals/{id}:
+    put:
+      tags: [Admin]
+      security: [{ bearerAuth: [] }]
+      summary: Aktualizuj danie
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MealCreate' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Meal' }
+        '404':
+          description: Danie nie znalezione
+    delete:
+      tags: [Admin]
+      security: [{ bearerAuth: [] }]
+      summary: Usuń danie
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Danie nie znalezione
+
+  /admin/meals/{id}/image:
+    put:
+      tags: [Admin]
+      security: [{ bearerAuth: [] }]
+      summary: Upload obrazu dania
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image: { type: string, format: binary }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  image: { type: string }
+
+  /payments/checkout-session:
+    post:
+      tags: [Payments]
+      security: [{ bearerAuth: [] }]
+      summary: Utwórz sesję Stripe Checkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId]
+              properties:
+                orderId: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CheckoutSessionResponse' }
+        '400':
+          description: Nie znaleziono / już opłacone
+        '401':
+          description: Brak autoryzacji
+        '403':
+          description: Brak dostępu do zamówienia
+        '503':
+          description: Płatności niedostępne
+
+  /payments/webhook:
+    post:
+      tags: [Payments]
+      security: []
+      summary: Webhook Stripe (checkout.session.completed, expired, refunded, payment_intent.payment_failed)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Event Stripe (wymaga nagłówka Stripe-Signature)
+      responses:
+        '200':
+          description: 'OK (received: true)'
+        '400':
+          description: Błąd weryfikacji sygnatury
+
+  /images/{filename}:
+    get:
+      tags: [Static]
+      security: []
+      summary: Pobierz obraz dania
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Plik obrazu
+          content:
+            image/webp:
+              schema: { type: string, format: binary }
+        '404':
+          description: Plik nie znaleziony

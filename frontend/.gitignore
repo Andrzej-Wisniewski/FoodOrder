@@ -1,0 +1,28 @@
+# Globalne
+.env
+.env.*
+.DS_Store
+
+# Logi
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node
+node_modules/
+
+# Backend build/cache
+backend/dist/
+backend/build/
+
+# Frontend build
+frontend/dist/
+frontend/node_modules/
+frontend/.vite/
+
+# IDE
+.vscode/
+.idea/
+
+# System macOS
+.DS_Store
