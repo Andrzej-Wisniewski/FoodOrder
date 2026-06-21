@@ -2,6 +2,8 @@
 
 Aplikacja do zamawiania jedzenia: React SPA + Express API + MongoDB + Stripe
 
+Dostępna pod adresem: https://andrzej-wisniewski.github.io/FoodOrder/
+
 ## Stack
 
 | Warstwa   | Technologie                   |
