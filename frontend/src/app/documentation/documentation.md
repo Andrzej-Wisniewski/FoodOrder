@@ -1,5 +1,22 @@
 # FoodOrder – dokumentacja projektu
 
+## Dokumentacja na GitHub
+
+Pełna dokumentacja techniczna (diagramy UML, przepływy, API):
+
+| Temat                                     | Link                                                                                      |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Spis treści + zmienne środowiskowe        | [docs/README.md](../../../docs/README.md)                                                 |
+| Architektura i wdrożenie                  | [docs/architecture/overview.md](../../../docs/architecture/overview.md)                   |
+| Diagram klas                              | [docs/architecture/class-diagram.md](../../../docs/architecture/class-diagram.md)         |
+| Moduły frontend ↔ backend                 | [docs/architecture/component-diagram.md](../../../docs/architecture/component-diagram.md) |
+| Przepływ danych (DFD)                     | [docs/architecture/data-flow.md](../../../docs/architecture/data-flow.md)                 |
+| Stany zamówienia                          | [docs/architecture/order-states.md](../../../docs/architecture/order-states.md)           |
+| Sekwencje (auth, checkout, Stripe, admin) | [docs/diagrams/sequences/](../../../docs/diagrams/sequences/)                             |
+| Ścieżki user / admin                      | [docs/diagrams/activity/](../../../docs/diagrams/activity/)                               |
+| Makiety ekranów                           | [docs/views/screens.md](../../../docs/views/screens.md)                                   |
+| API + OpenAPI                             | [docs/api/README.md](../../../docs/api/README.md)                                         |
+
 ---
 
 ## Wymagania systemowe
@@ -14,48 +31,35 @@
 ## Struktura aplikacji
 
 ```
-FoodOrderAppMain/
+FoodOrder/
 ├── backend/                 # API i logika serwera
-│   ├── docs
+│   ├── docs/
 │   │   └── openapi.yaml
 │   ├── features/            # Moduły funkcjonalne
-│   │   ├── admin/           # Panel admina (CRUD dań, zamówienia)
-│   │   ├── auth/            # Rejestracja, logowanie
-│   │   ├── meals/           # Lista dań
-│   │   ├── orders/          # Zamówienia użytkowników
-│   │   └── payments/        # Stripe Checkout, webhook
-│   ├── shared/              # Współdzielone narzędzia
-│   │   ├── middleware/      # auth, upload
-│   │   └── utils/           # walidacja, kompresja obrazów, Swagger
-│   ├── docs/                # OpenAPI (openapi.yaml)
-│   ├── images
-│   ├── app.js               # Konfiguracja Express, trasy
-│   ├── server.js            # Uruchomienie serwera, MongoDB
-│   ├── mongoose.js          # Połączenie z MongoDB
-│   ├── package.json
-│   └── initAdmin.js         # Tworzenie konta admina przy starcie
+│   │   ├── admin/         # Panel admina (CRUD dań, zamówienia)
+│   │   ├── auth/          # Rejestracja, logowanie
+│   │   ├── meals/         # Lista dań
+│   │   ├── orders/        # Zamówienia użytkowników
+│   │   └── payments/      # Stripe Checkout, webhook
+│   ├── shared/            # Współdzielone narzędzia
+│   │   ├── middleware/    # auth, upload
+│   │   └── utils/         # walidacja, kompresja obrazów, Swagger
+│   ├── images/
+│   ├── app.js
+│   ├── server.js
+│   ├── mongoose.js
+│   └── initAdmin.js
 │
 ├── frontend/                # Aplikacja React (SPA)
 │   ├── src/
-│   │   ├── app/             # App, Header, Footer
-│   │   │   ├── context/     # AuthContext, CartContext, ViewContext, ToastContext
-│   │   │   └── documentation/
-│   │   ├── features/        # Moduły po funkcji
-│   │   │   ├── auth/        # Logowanie, rejestracja
-│   │   │   ├── cart/        # Koszyk
-│   │   │   ├── meals/       # Lista dań, panel admina dań
-│   │   │   ├── orders/      # Zamówienia, formularz płatności
-│   │   │   └── payments/    # Przycisk płatności Stripe
-│   │   ├── shared/          # API (httpClient, payments), useLocalStorage, utils
+│   │   ├── app/             # App, Header, Footer, context/
+│   │   ├── features/        # auth, cart, meals, orders, admin, payments
+│   │   ├── shared/          # API, hooks, utils
 │   │   └── ui/              # Button, View, Card, Input, Loader, Toast
-│   ├── index.html
-│   ├── index.css
-│   ├── public
-│   │   └── images
-│   ├── package.json
-│   └── vite.config.js       # Proxy /api i /images → backend
+│   ├── vite.config.js       # Proxy /api i /images → backend
+│   └── package.json
 │
-└── documentation.md        # Ten plik
+└── docs/                    # Dokumentacja techniczna (diagramy UML)
 ```
 
 ---
@@ -65,21 +69,29 @@ FoodOrderAppMain/
 ### 1. Klonowanie i instalacja zależności
 
 ```bash
-# W katalogu projektu
-cd "FoodOrderAppMain copy"
+git clone <url-repozytorium>
+cd FoodOrder
 
 # Backend
 cd backend
 npm install
 
-# Frontend (w osobnym terminalu lub po powrocie do roota)
+# Frontend (w osobnym terminalu)
 cd ../frontend
 npm install
 ```
 
 ### 2. Konfiguracja zmiennych środowiskowych
 
-W katalogu **backend** utwórz plik `.env` (patrz sekcja [Zmienne środowiskowe](#zmienne-środowiskowe)) i uzupełnij wartości.
+W katalogu **backend** utwórz plik `.env`. Pełna lista: [docs/README.md](../../../docs/README.md#zmienne-środowiskowe).
+
+Wymagane minimum:
+
+```env
+MONGODB_URI=mongodb://localhost:27017/foodorder
+JWT_SECRET=twoj-sekret
+ADMIN_SECRET=haslo-admina
+```
 
 ### 3. Uruchomienie backendu
 
@@ -103,19 +115,19 @@ Aplikacja React jest dostępna pod **http://localhost:5173**. Vite proxy przekie
 
 ### 5. Pierwsze konto administratora
 
-Przy pierwszym uruchomieniu backend tworzy konto administratora na podstawie zmiennej `ADMIN_SECRET` (hasło admina). Zaloguj się tym hasłem, aby uzyskać dostęp do panelu administracyjnego (menu, zamówienia, dokumentacja).
+Przy pierwszym uruchomieniu backend tworzy konto administratora na podstawie zmiennej `ADMIN_SECRET` (hasło admina). Zaloguj się emailem `admin@test.com`, aby uzyskać dostęp do panelu administracyjnego (menu, zamówienia, dokumentacja).
 
 ---
 
 ## Dokumentacja API (Swagger / OpenAPI)
 
-Źródło prawdy dla API: **backend/docs/openapi.yaml** (OpenAPI 3.1). Opis w pliku: „API FoodOrder. Swagger UI pod /api-docs.” Na jego podstawie backend serwuje Swagger UI.
+Źródło prawdy: **backend/docs/openapi.yaml** (OpenAPI 3.1). Tabela endpointów: [docs/api/README.md](../../../docs/api/README.md).
 
 Po uruchomieniu backendu:
 
 - **Swagger UI:** [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
-W Swagger UI endpointy są pogrupowane według tagów z openapi.yaml: **Auth**, **Meals**, **Orders**, **Admin**, **Payments**, **Health**, **Static** (obrazy pod adresem bez /api, np. `http://localhost:3000/images/nazwa.jpg`). Można wykonać próbne wywołania po ustawieniu Bearer tokena (np. po zalogowaniu).
+W Swagger UI endpointy są pogrupowane według tagów: **Auth**, **Meals**, **Orders**, **Admin**, **Payments**, **Health**, **Static**. Można wykonać próbne wywołania po ustawieniu Bearer tokena (np. po zalogowaniu).
 
 ---
 
@@ -134,6 +146,4 @@ cd backend
 npm run test:unit
 ```
 
-Tryb watch (przy zmianach): `npm run test:unit` uruchamia Vitest w trybie watch; jednorazowe wykonanie: `npx vitest run`.
-
----
+Tryb watch: `npm run test:unit`. Jednorazowe wykonanie: `npx vitest run`.
